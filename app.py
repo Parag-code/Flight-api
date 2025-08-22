@@ -1,25 +1,24 @@
 from flask import Flask, request, jsonify
-import pandas as pd
-import joblib
-import os
+import joblib, pandas as pd, os
 
 app = Flask(__name__)
 
-# Lazy load models (only once at startup)
+# Globals (empty at startup, load on demand)
+rf = ohe = le = df = cluster_map = df_airports = feature_cols = model_code = None
+
 def load_resources():
+    """Lazy load heavy resources (model + dataset)."""
     global rf, ohe, le, df, cluster_map, df_airports, feature_cols, model_code
-    import flight_alternate_dates_routes_model as model_code
-
-    rf = joblib.load("flight_price_model.pkl")
-    ohe = joblib.load("onehot_encoder.pkl")
-    le = joblib.load("season_labelencoder.pkl")
-
-    df = model_code.df
-    cluster_map = model_code.cluster_map
-    df_airports = model_code.df_airports
-    feature_cols = model_code.X_train.columns
-
-load_resources()
+    if rf is None:  # Load only once
+        import flight_alternate_dates_routes_model as model_code
+        rf = joblib.load("flight_price_model.pkl")
+        ohe = joblib.load("onehot_encoder.pkl")
+        le = joblib.load("season_labelencoder.pkl")
+        df = model_code.df
+        cluster_map = model_code.cluster_map
+        df_airports = model_code.df_airports
+        feature_cols = model_code.X_train.columns
+        print("✅ Resources loaded successfully")
 
 @app.route("/")
 def home():
@@ -28,6 +27,7 @@ def home():
 @app.route("/full_search", methods=["POST"])
 def full_search_api():
     try:
+        load_resources()  # Ensure models/data loaded
         data = request.get_json(force=True)
         user_input = {
             "Dep_Code": data.get("Dep_Code"),
@@ -55,6 +55,5 @@ def full_search_api():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
-
 
 
