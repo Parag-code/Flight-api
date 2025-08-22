@@ -11,7 +11,7 @@ import pandas as pd
 import numpy as np
 from sklearn.preprocessing import LabelEncoder
 
-df = pd.read_csv("C:\\Users\\parag\\Downloads\\flight-api\\oneway_new.csv")
+df = pd.read_csv("oneway_new.csv")
 print("Dataset loaded. Shape:", df.shape)
 df.head()
 
