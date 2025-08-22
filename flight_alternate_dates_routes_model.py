@@ -11,7 +11,7 @@ import pandas as pd
 import numpy as np
 from sklearn.preprocessing import LabelEncoder
 
-df = pd.read_csv("oneway_new.csv")
+df = pd.read_csv("C:\\Users\\parag\\Downloads\\flight-api\\oneway_new.csv")
 print("Dataset loaded. Shape:", df.shape)
 df.head()
 
@@ -86,7 +86,7 @@ df_final.head()
 
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import root_mean_squared_error, r2_score , mean_absolute_error
+from sklearn.metrics import mean_squared_error, r2_score , mean_absolute_error
 import numpy as np
 
 X = df_final.drop(columns=["price"])
@@ -104,7 +104,7 @@ rf.fit(X_train, y_train)
 
 y_pred = rf.predict(X_test)
 
-rmse = root_mean_squared_error(y_test, y_pred)
+rmse = np.sqrt(mean_squared_error(y_test, y_pred))
 mae = mean_absolute_error(y_test, y_pred)
 r2 = r2_score(y_test, y_pred)
 
@@ -371,4 +371,5 @@ if __name__ == "__main__":
 
  print("\n===== Flight Price Suggestions =====")
  print(df_results.to_string(index=False))
+
 
